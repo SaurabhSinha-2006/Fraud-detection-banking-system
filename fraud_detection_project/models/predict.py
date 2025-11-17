@@ -1,0 +1,71 @@
+import pandas as pd
+import joblib
+import os
+import sys
+
+# FIX PATHS
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(os.path.join(BASE_DIR, "src"))
+
+from preprocess import preprocess
+from save_alert import save_alert
+
+MODEL_PATH = os.path.join(BASE_DIR, "models", "fraud_model.pkl")
+model = joblib.load(MODEL_PATH)
+
+REQUIRED_FIELDS = [
+    "amount",
+    "timestamp",
+    "location",
+    "merchant",
+    "category",
+    "transaction_type",
+    "device_id",
+    "user_id"
+]
+
+def predict_transaction(data):
+    missing = [f for f in REQUIRED_FIELDS if f not in data]
+    if missing:
+        raise ValueError(f"Missing required fields: {missing}")
+
+    df = pd.DataFrame([data])
+    df_pre = preprocess(df, training=False)
+
+    pred = model.predict(df_pre)[0]
+    prob = model.predict_proba(df_pre)[0][1]
+
+    return {
+        "prediction": int(pred),
+        "fraud_probability": float(prob)
+    }
+
+
+if __name__ == "__main__":
+
+    default_input = {
+        "transaction_id": 1001,
+        "amount": 500,
+        "timestamp": "2024-01-01 10:30:00",
+        "location": "Delhi",
+        "merchant": "Amazon",
+        "category": "online",
+        "transaction_type": "card",
+        "device_id": "123",        # device_id MUST be an integer in DB
+        "user_id": "45"            # user_id MUST be integer too ideally
+    }
+
+    print("\nUsing default example:")
+    print(default_input)
+
+    result = predict_transaction(default_input)
+    print("\nResult:")
+    print(result)
+
+    # Build data to save into DB
+    data_to_save = default_input.copy()
+    data_to_save["label"] = "fraud" if result["prediction"] == 1 else "legit"
+
+    save_alert(data_to_save)
+
+    print("\nSaved to DB:", data_to_save)
