@@ -1,9 +1,9 @@
+# models/predict.py  (manual tester)
 import pandas as pd
 import joblib
 import os
 import sys
 
-# FIX PATHS
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(os.path.join(BASE_DIR, "src"))
 
@@ -31,40 +31,49 @@ def predict_transaction(data):
 
     df = pd.DataFrame([data])
     df_pre = preprocess(df, training=False)
-
     pred = model.predict(df_pre)[0]
     prob = model.predict_proba(df_pre)[0][1]
+    return {"prediction": int(pred), "fraud_probability": float(prob)}
 
+def get_user_input():
+    print("\nEnter transaction details (leave transaction_id blank to auto-assign):")
+    txn_id_raw = input("Transaction ID (press Enter to let DB auto-assign): ").strip()
+    txn_id = int(txn_id_raw) if txn_id_raw else None
     return {
-        "prediction": int(pred),
-        "fraud_probability": float(prob)
+        "transaction_id": txn_id,
+        "amount": float(input("Amount: ")),
+        "timestamp": input("Timestamp (YYYY-MM-DD HH:MM:SS): "),
+        "location": input("Location: "),
+        "merchant": input("Merchant: "),
+        "category": input("Category: "),
+        "transaction_type": input("Transaction Type (online/offline/international): "),
+        "device_id": int(input("Device ID: ")),
+        "user_id": int(input("User ID: "))
     }
-
 
 if __name__ == "__main__":
+    print("Choose mode: [1] Manual [2] Default example")
+    ch = input("Choice (1/2): ").strip()
+    if ch == "1":
+        data = get_user_input()
+    else:
+        data = {
+            "transaction_id": None,
+            "amount": 95000,
+            "timestamp": "2024-12-25 02:45:10",
+            "location": "Russia",
+            "merchant": "Unknown",
+            "category": "crypto",
+            "transaction_type": "international",
+            "device_id": 999,
+            "user_id": 45
+        }
+        print("\nUsing default example:", data)
 
-    default_input = {
-        "transaction_id": 1009,
-        "amount": 95000,
-        "timestamp": "2024-12-25 02:45:10",
-        "location": "Russia",
-        "merchant": "Unknown",
-        "category": "crypto",
-        "transaction_type": "international",
-        "device_id": 999,
-        "user_id": 45
-    }
-
-    print("\nUsing default example:")
-    print(default_input)
-
-    result = predict_transaction(default_input)
-    print("\nResult:")
-    print(result)
-
-    data_to_save = default_input.copy()
-    data_to_save["label"] = "fraud" if result["prediction"] == 1 else "legit"
-    data_to_save["fraud_probability"] = result["fraud_probability"]
-
-    save_alert(data_to_save)
-
+    res = predict_transaction(data)
+    print("Prediction:", res)
+    data_to_save = data.copy()
+    data_to_save["label"] = "fraud" if res["prediction"] == 1 else "legit"
+    data_to_save["fraud_probability"] = res["fraud_probability"]
+    ok = save_alert(data_to_save)
+    print("Saved to DB:", ok)

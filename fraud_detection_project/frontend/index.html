@@ -1,55 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fraud Detection Dashboard</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8"/>
+  <title>Fraud Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <div class="header">Fraud Detection Dashboard</div>
+  <div class="header">Fraud Detection Dashboard</div>
 
-    <div class="stats-container">
-        <div class="stat-box">
-            <h3>Total Transactions</h3>
-            <p id="total-transactions">0</p>
-        </div>
-        <div class="stat-box">
-            <h3>Total Fraud Alerts</h3>
-            <p id="total-frauds">0</p>
-        </div>
-        <div class="stat-box">
-            <h3>Fraud Rate</h3>
-            <p id="fraud-rate">0%</p>
-        </div>
-    </div>
+  <div class="stats-container">
+    <div class="stat-box"><h3>Total Txns</h3><p id="total-transactions">0</p></div>
+    <div class="stat-box"><h3>Total Alerts</h3><p id="total-frauds">0</p></div>
+    <div class="stat-box"><h3>Fraud Rate</h3><p id="fraud-rate">0%</p></div>
+  </div>
 
-    <div class="container">
-        <h2>Transactions</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th><th>Amount</th><th>Location</th>
-                    <th>Merchant</th><th>Category</th><th>Type</th>
-                    <th>Probability</th><th>Label</th>
-                </tr>
-            </thead>
-            <tbody id="transaction-table"></tbody>
-        </table>
+  <div class="container">
+    <h2>Recent Transactions</h2>
+    <table><thead><tr>
+      <th>ID</th><th>Amount</th><th>Location</th><th>Merchant</th><th>Type</th><th>Prob</th><th>Label</th>
+    </tr></thead><tbody id="transaction-table"></tbody></table>
 
-        <h2>Fraud Alerts</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Alert ID</th><th>Txn ID</th><th>Label</th>
-                    <th>Confidence</th><th>Timestamp</th>
-                </tr>
-            </thead>
-            <tbody id="alert-table"></tbody>
-        </table>
-    </div>
+    <h2>Fraud Alerts</h2>
+    <table><thead><tr>
+      <th>Alert ID</th><th>Txn ID</th><th>Label</th><th>Confidence</th><th>Timestamp</th>
+    </tr></thead><tbody id="alert-table"></tbody></table>
+  </div>
 
-    <script src="dashboard.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>
