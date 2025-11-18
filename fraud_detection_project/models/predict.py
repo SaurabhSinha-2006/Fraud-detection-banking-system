@@ -44,15 +44,15 @@ def predict_transaction(data):
 if __name__ == "__main__":
 
     default_input = {
-        "transaction_id": 1001,
-        "amount": 500,
-        "timestamp": "2024-01-01 10:30:00",
-        "location": "Delhi",
-        "merchant": "Amazon",
-        "category": "online",
-        "transaction_type": "card",
-        "device_id": "123",        # device_id MUST be an integer in DB
-        "user_id": "45"            # user_id MUST be integer too ideally
+        "transaction_id": 1009,
+        "amount": 95000,
+        "timestamp": "2024-12-25 02:45:10",
+        "location": "Russia",
+        "merchant": "Unknown",
+        "category": "crypto",
+        "transaction_type": "international",
+        "device_id": 999,
+        "user_id": 45
     }
 
     print("\nUsing default example:")
@@ -62,10 +62,9 @@ if __name__ == "__main__":
     print("\nResult:")
     print(result)
 
-    # Build data to save into DB
     data_to_save = default_input.copy()
     data_to_save["label"] = "fraud" if result["prediction"] == 1 else "legit"
+    data_to_save["fraud_probability"] = result["fraud_probability"]
 
     save_alert(data_to_save)
 
-    print("\nSaved to DB:", data_to_save)
