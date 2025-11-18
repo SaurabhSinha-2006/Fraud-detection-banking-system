@@ -1,26 +1,154 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="UTF-8">
   <title>Submit Transaction</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f6fc;
+    }
+
+    .header {
+      background: #3b82f6;
+      padding: 20px;
+      color: white;
+      font-size: 26px;
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .card {
+      width: 450px;
+      background: white;
+      padding: 25px;
+      margin: 30px auto;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #1f2937;
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      display: block;
+      margin-top: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 3px rgba(59,130,246,0.7);
+    }
+
+    button {
+      width: 100%;
+      background: #3b82f6;
+      border: none;
+      padding: 12px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    #result {
+      background: #1e293b;
+      color: #00eaff;
+      padding: 15px;
+      font-size: 14px;
+      border-radius: 8px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      display: none;
+    }
+
+    .success-box {
+      background: #dcfce7;
+      color: #166534;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-top: 14px;
+      display: none;
+      font-weight: 600;
+    }
+  </style>
 </head>
+
 <body>
+
   <div class="header">Submit Transaction</div>
 
-  <form id="txnForm" class="form">
-    <label>Amount: <input name="amount" type="number" step="0.01" required></label><br>
-    <label>Timestamp: <input name="timestamp" type="datetime-local" required></label><br>
-    <label>Location: <input name="location" type="text" value="Delhi"></label><br>
-    <label>Merchant: <input name="merchant" type="text" value="Amazon"></label><br>
-    <label>Category: <input name="category" type="text" value="online"></label><br>
-    <label>Transaction Type: <input name="transaction_type" type="text" value="card"></label><br>
-    <label>Device ID: <input name="device_id" type="number" value="123"></label><br>
-    <label>User ID: <input name="user_id" type="number" value="45"></label><br>
-    <button type="submit">Submit</button>
-  </form>
+  <div class="card">
+    <h2>Enter Transaction Details</h2>
 
-  <pre id="result"></pre>
+    <form id="txnForm">
+      <label>Amount</label>
+      <input name="amount" type="number" step="0.01" required>
+
+      <label>Timestamp</label>
+      <input name="timestamp" type="datetime-local" required>
+
+      <label>Location</label>
+      <input name="location" type="text" value="Delhi">
+
+      <label>Merchant</label>
+      <input name="merchant" type="text" value="Amazon">
+
+      <label>Category</label>
+      <input name="category" type="text" value="online">
+
+      <label>Transaction Type</label>
+      <input name="transaction_type" type="text" value="card">
+
+      <label>Device ID</label>
+      <input name="device_id" type="number" value="123">
+
+      <label>User ID</label>
+      <input name="user_id" type="number" value="45">
+
+      <button type="submit">Submit Transaction</button>
+    </form>
+
+    <div class="success-box" id="successBox">Transaction Saved Successfully!</div>
+
+    <pre id="result"></pre>
+  </div>
 
   <script>
     const API = "http://localhost:5000";
@@ -33,6 +161,7 @@
 
     document.getElementById('txnForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const fd = new FormData(e.target);
       const payload = {
         amount: parseFloat(fd.get('amount')),
@@ -52,8 +181,16 @@
       });
 
       const data = await res.json();
+
+      document.getElementById('result').style.display = "block";
       document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+
+      document.getElementById('successBox').style.display = "block";
+      setTimeout(() => {
+        document.getElementById('successBox').style.display = "none";
+      }, 3000);
     });
   </script>
+
 </body>
 </html>
